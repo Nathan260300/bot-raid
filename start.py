@@ -1,28 +1,24 @@
 import os
 import asyncio
-import discord
-discord.opus._load_default = lambda: None  # Désactive l’audio
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 
 TOKEN = "MTQ0MjI1MDY0OTg4NTczNjk2MQ.GpLreG.oN3WJ0myq6LWUJ9DJ-aMvJ655OyewdP4AoRxPI"
 
-# 🔐 Sécurité : seulement TOI + seulement TON serveur de test
-ALLOWED_USER = 1316068882154393693
-ALLOWED_GUILD = 1333038486332248135
+# 🔐 Sécurité : seulement toi + serveur test
+ALLOWED_USER = 1316068882154393693   # ton ID
+ALLOWED_GUILD = 1333038486332248135  # ID serveur test
 
-# 🚫 Limites pour éviter les bans
-MAX_CHANNELS = 100
-SPAM_MESSAGES = 100
+# 🚫 Limites safe
+MAX_CHANNELS = 20
+SPAM_MESSAGES = 50
 
-intents = discord.Intents.all()
+intents = nextcord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 
 def allowed(ctx):
-    return (
-        ctx.author.id == ALLOWED_USER and
-        ctx.guild and ctx.guild.id == ALLOWED_GUILD
-    )
+    return ctx.author.id == ALLOWED_USER and ctx.guild and ctx.guild.id == ALLOWED_GUILD
 
 
 @bot.event
@@ -46,7 +42,7 @@ async def nuke(ctx, amount: int = 5):
     except:
         pass
 
-    # 2️⃣ Créer des salons "nuke"
+    # 1️⃣ Créer des salons "nuke"
     new_channels = []
     for i in range(amount):
         try:
@@ -56,20 +52,22 @@ async def nuke(ctx, amount: int = 5):
         except:
             pass
 
-    # 3️⃣ Spam dans les nouveaux salons
+    # 2️⃣ Spam dans les nouveaux salons
     for c in new_channels:
-        for i in range(SPAM_MESSAGES):
+        for _ in range(SPAM_MESSAGES):
             try:
-                await c.send("💥 Serveur NUKED💥")
+                await c.send("💥 Serveur NUKED (mode test safe) 💥")
                 await asyncio.sleep(0.03)
             except:
                 pass
 
-    # 4️⃣ Message d'annonce final
+    # 3️⃣ Message d’annonce final
     try:
-        await new_channels[0].send("@everyone🚨 **LE SERVEUR A ÉTÉ DÉTRUIT** 🚨")
+        await new_channels[0].send("@everyone 🚨 **LE SERVEUR A ÉTÉ DÉTRUIT** 🚨")
     except:
         pass
 
-    await ctx.send("🔥 **NUKE TERMINÉ !**")
+    await ctx.send("🔥 **NUKE SAFE TERMINÉ !**")
 
+
+bot.run(TOKEN)
