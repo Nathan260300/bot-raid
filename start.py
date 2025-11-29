@@ -1,34 +1,36 @@
 import os
-import threading
 import asyncio
 import nextcord
 from nextcord.ext import commands
 from flask import Flask
+from threading import Thread
 
-# ----- Flask pour Render -----
+TOKEN = "MTQ0MjI1MDY0OTg4NTczNjk2MQ.GpLreG.oN3WJ0myq6LWUJ9DJ-aMvJ655OyewdP4AoRxPI"
+
 app = Flask(__name__)
 
 @app.route("/")
 def home():
     return "Bot en ligne !"
 
-# ----- Bot Discord -----
-TOKEN = "MTQ0MjI1MDY0OTg4NTczNjk2MQ.GpLreG.oN3WJ0myq6LWUJ9DJ-aMvJ655OyewdP4AoRxPI"  
-
 ALLOWED_USER = 1316068882154393693
 ALLOWED_GUILD = 1333038486332248135
-MAX_CHANNELS = 500
-SPAM_MESSAGES = 1000
+
+MAX_CHANNELS = 20
+SPAM_MESSAGES = 50
 
 intents = nextcord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
+
 def allowed(ctx):
     return ctx.author.id == ALLOWED_USER and ctx.guild and ctx.guild.id == ALLOWED_GUILD
+
 
 @bot.event
 async def on_ready():
     print(f"Bot connecté en tant que {bot.user}")
+
 
 @bot.command()
 async def nuke(ctx, amount: int = 5):
@@ -45,6 +47,7 @@ async def nuke(ctx, amount: int = 5):
     except:
         pass
 
+    # création salons
     new_channels = []
     for i in range(amount):
         try:
@@ -54,6 +57,7 @@ async def nuke(ctx, amount: int = 5):
         except:
             pass
 
+    # spam
     for c in new_channels:
         for _ in range(SPAM_MESSAGES):
             try:
@@ -69,13 +73,17 @@ async def nuke(ctx, amount: int = 5):
 
     await ctx.send("🔥 **NUKE SAFE TERMINÉ !**")
 
-# ----- Lancer le bot dans un thread -----
-def run_bot():
-    bot.run(TOKEN)
 
-threading.Thread(target=run_bot).start()
-
-# ----- Lancer Flask -----
-if __name__ == "__main__":
+# --- LANCER FLASK DANS UN THREAD (OK) ---
+def run_flask():
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
+
+Thread(target=run_flask).start()
+
+# --- LANCER NEXTCORD SUR LA BOUCLE PRINCIPALE (OBLIGATOIRE) ---
+async def main():
+    await bot.start(TOKEN)
+
+if __name__ == "__main__":
+    asyncio.run(main())
