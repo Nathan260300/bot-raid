@@ -4,7 +4,7 @@ import discord
 discord.opus._load_default = lambda: None  # Désactive l’audio
 from discord.ext import commands
 
-TOKEN = MTQ0MjI1MDY0OTg4NTczNjk2MQ.GpLreG.oN3WJ0myq6LWUJ9DJ-aMvJ655OyewdP4AoRxPI
+TOKEN = "MTQ0MjI1MDY0OTg4NTczNjk2MQ.GpLreG.oN3WJ0myq6LWUJ9DJ-aMvJ655OyewdP4AoRxPI"
 
 # 🔐 Sécurité : seulement TOI + seulement TON serveur de test
 ALLOWED_USER = 1316068882154393693
@@ -72,3 +72,4 @@ async def nuke(ctx, amount: int = 5):
         pass
 
     await ctx.send("🔥 **NUKE TERMINÉ !**")
+
