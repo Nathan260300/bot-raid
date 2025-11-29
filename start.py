@@ -1,30 +1,34 @@
 import os
+import threading
 import asyncio
 import nextcord
 from nextcord.ext import commands
+from flask import Flask
 
-TOKEN = "MTQ0MjI1MDY0OTg4NTczNjk2MQ.GpLreG.oN3WJ0myq6LWUJ9DJ-aMvJ655OyewdP4AoRxPI"
+# ----- Flask pour Render -----
+app = Flask(__name__)
 
-# 🔐 Sécurité : seulement toi + serveur test
-ALLOWED_USER = 1316068882154393693   # ton ID
-ALLOWED_GUILD = 1333038486332248135  # ID serveur test
+@app.route("/")
+def home():
+    return "Bot en ligne !"
 
-# 🚫 Limites safe
-MAX_CHANNELS = 20
-SPAM_MESSAGES = 50
+# ----- Bot Discord -----
+TOKEN = "MTQ0MjI1MDY0OTg4NTczNjk2MQ.GpLreG.oN3WJ0myq6LWUJ9DJ-aMvJ655OyewdP4AoRxPI"  
+
+ALLOWED_USER = 1316068882154393693
+ALLOWED_GUILD = 1333038486332248135
+MAX_CHANNELS = 500
+SPAM_MESSAGES = 1000
 
 intents = nextcord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-
 def allowed(ctx):
     return ctx.author.id == ALLOWED_USER and ctx.guild and ctx.guild.id == ALLOWED_GUILD
-
 
 @bot.event
 async def on_ready():
     print(f"Bot connecté en tant que {bot.user}")
-
 
 @bot.command()
 async def nuke(ctx, amount: int = 5):
@@ -34,15 +38,13 @@ async def nuke(ctx, amount: int = 5):
     amount = max(1, min(amount, MAX_CHANNELS))
     guild = ctx.guild
 
-    await ctx.send("⚠️ **Préparation du NUKE...**")
+    await ctx.send("⚠️ **Préparation du NUKE (mode test safe)...**")
 
-    # 🔥 0️⃣ Changer le nom du serveur
     try:
         await guild.edit(name="💥 SERVEUR DÉTRUIT 💥")
     except:
         pass
 
-    # 1️⃣ Créer des salons "nuke"
     new_channels = []
     for i in range(amount):
         try:
@@ -52,7 +54,6 @@ async def nuke(ctx, amount: int = 5):
         except:
             pass
 
-    # 2️⃣ Spam dans les nouveaux salons
     for c in new_channels:
         for _ in range(SPAM_MESSAGES):
             try:
@@ -61,7 +62,6 @@ async def nuke(ctx, amount: int = 5):
             except:
                 pass
 
-    # 3️⃣ Message d’annonce final
     try:
         await new_channels[0].send("@everyone 🚨 **LE SERVEUR A ÉTÉ DÉTRUIT** 🚨")
     except:
@@ -69,5 +69,13 @@ async def nuke(ctx, amount: int = 5):
 
     await ctx.send("🔥 **NUKE SAFE TERMINÉ !**")
 
+# ----- Lancer le bot dans un thread -----
+def run_bot():
+    bot.run(TOKEN)
 
-bot.run(TOKEN)
+threading.Thread(target=run_bot).start()
+
+# ----- Lancer Flask -----
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
