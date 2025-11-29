@@ -1,6 +1,7 @@
 import os
 import asyncio
 import discord
+discord.opus._load_default = lambda: None  # Désactive l’audio
 from discord.ext import commands
 
 TOKEN = MTQ0MjI1MDY0OTg4NTczNjk2MQ.GpLreG.oN3WJ0myq6LWUJ9DJ-aMvJ655OyewdP4AoRxPI
